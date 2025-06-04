@@ -75,15 +75,12 @@ function findPerpendicular(
 
         if (intersectionPoint) {
           const dist = vec2.distance(currentWallPoint, intersectionPoint);
-          if (dist > 1e-6 && dist > maxDist) {
-            console.log(dist, maxDist);
-
+          if (dist > maxDist) {
             maxDist = dist;
             best = {
               from: currentWallPoint,
               to: intersectionPoint,
             };
-            console.log(best);
           }
         }
       }

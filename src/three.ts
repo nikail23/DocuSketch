@@ -64,8 +64,8 @@ export function animate3DStart(roomData: RoomData, segments: Segments): number {
     scene.remove(room);
   }
 
-  room = new Room(roomData, 200, segments);
-  room.scale.multiplyScalar(0.005);
+  room = new Room(roomData, roomHeight, segments);
+  room.scale.multiplyScalar(roomScale);
   scene.add(room);
 
   orbitControls.target.copy(

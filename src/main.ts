@@ -63,15 +63,14 @@ function switchMode(mode: '3d' | '2d'): void {
 }
 
 function triggerAnimation(): void {
+  const currentSegments = segments[segmentsVariantIndex];
+
   switch (currentMode) {
     case '3d':
-      animation3DLoop = animate3DStart(
-        roomData,
-        segments[segmentsVariantIndex]
-      );
+      animation3DLoop = animate3DStart(roomData, currentSegments);
       break;
     case '2d':
-      animate2DStart(roomData, segments[segmentsVariantIndex]);
+      animate2DStart(roomData, currentSegments);
       break;
   }
 }
