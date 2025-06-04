@@ -1,10 +1,11 @@
 import { vec2 } from 'gl-matrix';
 import type { RoomCorner, RoomData, RoomWall } from './core';
 
-export function computeParams(room: RoomData): Params[] {
+export function computeSegments(room: RoomData): Segments[] {
   return room.walls
     .map((wall) => {
       const [start, end] = getWallPoints(room, wall) ?? [];
+
       const perpendicular = findPerpendicular(room, wall);
       return perpendicular
         ? {
@@ -16,7 +17,7 @@ export function computeParams(room: RoomData): Params[] {
           }
         : null;
     })
-    .filter(Boolean) as Params[];
+    .filter(Boolean) as Segments[];
 }
 
 function findPerpendicular(
@@ -75,11 +76,14 @@ function findPerpendicular(
         if (intersectionPoint) {
           const dist = vec2.distance(currentWallPoint, intersectionPoint);
           if (dist > 1e-6 && dist > maxDist) {
+            console.log(dist, maxDist);
+
             maxDist = dist;
             best = {
               from: currentWallPoint,
               to: intersectionPoint,
             };
+            console.log(best);
           }
         }
       }
@@ -125,9 +129,8 @@ export function getRoomBounds(c: RoomCorner[]) {
   };
 }
 
-export type Params = {
+export type Segments = {
   length: { from: vec2; to: vec2 };
   width: { from: vec2; to: vec2 };
 };
-export type AnimateFunction = (roomData: RoomData, params?: Params) => number;
 export type Mode = '3d' | '2d';

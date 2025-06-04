@@ -9,7 +9,7 @@ import {
 import { Room } from './core/room';
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
 import type { RoomData } from './core';
-import type { Params } from './utils';
+import type { Segments } from './utils';
 
 const scene = new Scene();
 
@@ -56,7 +56,7 @@ function animate3D(): number {
 
 let room: Room;
 
-export function animate3DStart(roomData: RoomData, params?: Params): number {
+export function animate3DStart(roomData: RoomData, segments: Segments): number {
   const roomHeight = 200;
   const roomScale = 0.005;
 
@@ -64,7 +64,7 @@ export function animate3DStart(roomData: RoomData, params?: Params): number {
     scene.remove(room);
   }
 
-  room = new Room(roomData, 200);
+  room = new Room(roomData, 200, segments);
   room.scale.multiplyScalar(0.005);
   scene.add(room);
 

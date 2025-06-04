@@ -1,7 +1,7 @@
 import { animate2DStart, canvas2D } from './canvas';
 import { roomOptions, type RoomData } from './core';
 import { animate3DStart, canvas3D } from './three';
-import { computeParams, type Mode, type Params } from './utils';
+import { computeSegments, type Mode, type Segments } from './utils';
 
 const mode3DButton = document.createElement('button');
 mode3DButton.innerText = '3D';
@@ -37,8 +37,8 @@ document.body.appendChild(changeWidthLengthButton);
 
 let roomData: RoomData;
 let currentMode: Mode = '2d';
-let params: Params[] = [];
-let paramsVariantIndex = 0;
+let segments: Segments[] = [];
+let segmentsVariantIndex = 0;
 let animation3DLoop: number | null = null;
 
 function switchMode(mode: '3d' | '2d'): void {
@@ -65,10 +65,13 @@ function switchMode(mode: '3d' | '2d'): void {
 function triggerAnimation(): void {
   switch (currentMode) {
     case '3d':
-      animation3DLoop = animate3DStart(roomData, params[paramsVariantIndex]);
+      animation3DLoop = animate3DStart(
+        roomData,
+        segments[segmentsVariantIndex]
+      );
       break;
     case '2d':
-      animate2DStart(roomData, params[paramsVariantIndex]);
+      animate2DStart(roomData, segments[segmentsVariantIndex]);
       break;
   }
 }
@@ -76,20 +79,20 @@ function triggerAnimation(): void {
 function randomizeRoom(): void {
   const roomIndex = Math.floor(Math.random() * roomOptions.length);
   roomData = roomOptions[roomIndex];
-  params = computeParams(roomData);
-  paramsVariantIndex = 0;
+  segments = computeSegments(roomData);
+  segmentsVariantIndex = 0;
 
   switchMode(currentMode);
 }
 
-function switchParamsVariant(): void {
-  paramsVariantIndex = (paramsVariantIndex + 1) % params.length;
+function switchSegmentsVariant(): void {
+  segmentsVariantIndex = (segmentsVariantIndex + 1) % segments.length;
   triggerAnimation();
 }
 
 mode2DButton.onclick = switchMode.bind(this, '2d');
 mode3DButton.onclick = switchMode.bind(this, '3d');
 randomizeRoomButton.onclick = randomizeRoom;
-changeWidthLengthButton.onclick = switchParamsVariant;
+changeWidthLengthButton.onclick = switchSegmentsVariant;
 
 randomizeRoom();

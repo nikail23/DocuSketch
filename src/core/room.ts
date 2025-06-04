@@ -1,18 +1,22 @@
 import {
   BufferGeometry,
+  CatmullRomCurve3,
   DoubleSide,
   Float32BufferAttribute,
   Group,
   LineBasicMaterial,
   LineSegments,
   Mesh,
+  MeshBasicMaterial,
   MeshStandardMaterial,
   Object3D,
   Shape,
   ShapeGeometry,
+  TubeGeometry,
+  Vector3,
 } from 'three';
-import { roomOptions } from './room.const';
 import type { RoomData, RoomLinkedWall } from './room.model';
+import type { Segments } from '../utils';
 
 export class Room extends Group {
   private readonly _wallMaterial = new MeshStandardMaterial({
@@ -31,11 +35,43 @@ export class Room extends Group {
   private _center: { x: number; y: number };
   private _roomData: RoomData;
 
-  constructor(roomData: RoomData, height: number) {
+  constructor(roomData: RoomData, height: number, segments: Segments) {
     super();
     this._roomData = roomData;
     this._center = this._getCenter();
     this._createRoom(height);
+    this._drawSegments(segments);
+  }
+
+  private _drawSegments(segments: Segments): void {
+    let points = [segments.length.from, segments.length.to];
+
+    let tubePoints = points.map(
+      (point) =>
+        new Vector3(point[0] - this._center.x, 0, point[1] - this._center.y)
+    );
+    const curve = new CatmullRomCurve3(tubePoints);
+    const tubeGeometry = new TubeGeometry(curve, 64, 2, 8, false);
+    const lengthMaterial = new MeshBasicMaterial({
+      color: 0xe74c3c,
+      side: DoubleSide,
+    });
+    const lengthTube = new Mesh(tubeGeometry, lengthMaterial);
+    this.add(lengthTube);
+
+    points = [segments.width.from, segments.width.to];
+    tubePoints = points.map(
+      (point) =>
+        new Vector3(point[0] - this._center.x, 0, point[1] - this._center.y)
+    );
+    const widthCurve = new CatmullRomCurve3(tubePoints);
+    const widthTubeGeometry = new TubeGeometry(widthCurve, 64, 2, 8, false);
+    const widthMaterial = new MeshBasicMaterial({
+      color: 0x3498db,
+      side: DoubleSide,
+    });
+    const widthTube = new Mesh(widthTubeGeometry, widthMaterial);
+    this.add(widthTube);
   }
 
   private _getCenter(): { x: number; y: number } {

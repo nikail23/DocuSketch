@@ -1,10 +1,10 @@
 import type { RoomData } from './core/room.model';
-import { getRoomBounds, getWallPoints, type Params } from './utils';
+import { getRoomBounds, getWallPoints, type Segments } from './utils';
 
 function drawRoom(
   ctx: CanvasRenderingContext2D,
   room: RoomData,
-  params?: Params
+  segments?: Segments
 ) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
@@ -49,20 +49,20 @@ function drawRoom(
   }
   ctx.restore();
 
-  if (params) {
+  if (segments) {
     ctx.save();
     ctx.strokeStyle = '#e74c3c';
     ctx.lineWidth = 6;
     ctx.beginPath();
-    ctx.moveTo(...tx(params.length.from[0], params.length.from[1]));
-    ctx.lineTo(...tx(params.length.to[0], params.length.to[1]));
+    ctx.moveTo(...tx(segments.length.from[0], segments.length.from[1]));
+    ctx.lineTo(...tx(segments.length.to[0], segments.length.to[1]));
     ctx.stroke();
 
     ctx.strokeStyle = '#3498db';
     ctx.lineWidth = 6;
     ctx.beginPath();
-    ctx.moveTo(...tx(params.width.from[0], params.width.from[1]));
-    ctx.lineTo(...tx(params.width.to[0], params.width.to[1]));
+    ctx.moveTo(...tx(segments.width.from[0], segments.width.from[1]));
+    ctx.lineTo(...tx(segments.width.to[0], segments.width.to[1]));
     ctx.stroke();
     ctx.restore();
   }
@@ -74,6 +74,6 @@ canvas2D.height = window.innerHeight;
 document.body.appendChild(canvas2D);
 const ctx = canvas2D.getContext('2d')!;
 
-export function animate2DStart(roomData: RoomData, params?: Params) {
-  drawRoom(ctx, roomData, params);
+export function animate2DStart(roomData: RoomData, segments?: Segments) {
+  drawRoom(ctx, roomData, segments);
 }
