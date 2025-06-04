@@ -1,11 +1,9 @@
 import {
   AmbientLight,
-  BoxGeometry,
   DirectionalLight,
-  Mesh,
-  MeshStandardMaterial,
   PerspectiveCamera,
   Scene,
+  Vector3,
   WebGLRenderer,
 } from 'three';
 import { Room } from './core/room';
@@ -20,26 +18,30 @@ scene.add(light);
 const ambientLight = new AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
-const cube = new Mesh(
-  new BoxGeometry(1, 1, 1),
-  new MeshStandardMaterial({ color: 0x00ff00, metalness: 0.2, roughness: 0.8 })
-);
-scene.add(cube);
-
 export const camera = new PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
   0.1,
   1000
 );
-camera.position.z = 2.5;
+camera.position.y = 3;
+camera.position.z = 2;
+camera.position.x = 2;
 
 export const renderer = new WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+const roomHeight = 200;
+const roomScale = 0.005;
+const room = new Room(roomHeight);
+room.scale.multiplyScalar(roomScale);
+scene.add(room);
+
 const orbitControls = new OrbitControls(camera, renderer.domElement);
-orbitControls.target.copy(cube.position);
+orbitControls.target.copy(
+  room.position.add(new Vector3(0, (roomHeight * roomScale) / 2, 0))
+);
 
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -54,7 +56,5 @@ function animate() {
 
   renderer.render(scene, camera);
 }
-
-console.log(new Room());
 
 animate();

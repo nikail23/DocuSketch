@@ -14,3 +14,11 @@ export interface RoomData {
   walls: RoomWall[];
   corners: RoomCorner[];
 }
+
+export interface RoomLinkedWall {
+  id: string;
+  start?: RoomCorner;
+  end?: RoomCorner;
+  nextWall?: RoomLinkedWall;
+  height?: number;
+}
