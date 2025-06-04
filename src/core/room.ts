@@ -31,6 +31,14 @@ export class Room extends Group {
     color: 0x000000,
     linewidth: 2,
   });
+  private readonly _lengthMaterial = new MeshBasicMaterial({
+    color: 0xe74c3c,
+    side: DoubleSide,
+  });
+  private readonly _widthMaterial = new MeshBasicMaterial({
+    color: 0x3498db,
+    side: DoubleSide,
+  });
 
   private _center: { x: number; y: number };
   private _roomData: RoomData;
@@ -52,11 +60,8 @@ export class Room extends Group {
     );
     const curve = new CatmullRomCurve3(tubePoints);
     const tubeGeometry = new TubeGeometry(curve, 64, 2, 8, false);
-    const lengthMaterial = new MeshBasicMaterial({
-      color: 0xe74c3c,
-      side: DoubleSide,
-    });
-    const lengthTube = new Mesh(tubeGeometry, lengthMaterial);
+
+    const lengthTube = new Mesh(tubeGeometry, this._lengthMaterial);
     this.add(lengthTube);
 
     points = [segments.width.from, segments.width.to];
@@ -66,11 +71,7 @@ export class Room extends Group {
     );
     const widthCurve = new CatmullRomCurve3(tubePoints);
     const widthTubeGeometry = new TubeGeometry(widthCurve, 64, 2, 8, false);
-    const widthMaterial = new MeshBasicMaterial({
-      color: 0x3498db,
-      side: DoubleSide,
-    });
-    const widthTube = new Mesh(widthTubeGeometry, widthMaterial);
+    const widthTube = new Mesh(widthTubeGeometry, this._widthMaterial);
     this.add(widthTube);
   }
 
