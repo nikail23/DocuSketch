@@ -1,5 +1,5 @@
 import type { RoomData } from './core/room.model';
-import { getRoomBounds, getWallPoints, type Segments } from './utils';
+import { getRoomBounds, getWallSegment, type Segments } from './utils';
 
 function drawRoom(
   ctx: CanvasRenderingContext2D,
@@ -29,9 +29,9 @@ function drawRoom(
   ctx.strokeStyle = '#222';
   ctx.lineWidth = 4;
   for (const wall of room.walls) {
-    const [a, b] = getWallPoints(room, wall);
-    const [x1, y1] = tx(a.x, a.y);
-    const [x2, y2] = tx(b.x, b.y);
+    const { from, to } = getWallSegment(room, wall);
+    const [x1, y1] = tx(from[0], from[1]);
+    const [x2, y2] = tx(to[0], to[1]);
     ctx.beginPath();
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);

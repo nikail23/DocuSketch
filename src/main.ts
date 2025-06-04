@@ -1,7 +1,7 @@
 import { animate2DStart, canvas2D } from './canvas';
 import { roomOptions, type RoomData } from './core';
 import { animate3DStart, canvas3D } from './three';
-import { computeSegments, type Mode, type Segments } from './utils';
+import { computeSegments, type Segments } from './utils';
 
 const mode3DButton = document.createElement('button');
 mode3DButton.innerText = '3D';
@@ -34,6 +34,8 @@ changeWidthLengthButton.style.top = '20px';
 changeWidthLengthButton.style.left = '220px';
 changeWidthLengthButton.style.zIndex = '10';
 document.body.appendChild(changeWidthLengthButton);
+
+type Mode = '3d' | '2d';
 
 let roomData: RoomData;
 let currentMode: Mode = '2d';
