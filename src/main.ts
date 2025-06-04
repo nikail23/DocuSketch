@@ -1,60 +1,95 @@
-import {
-  AmbientLight,
-  DirectionalLight,
-  PerspectiveCamera,
-  Scene,
-  Vector3,
-  WebGLRenderer,
-} from 'three';
-import { Room } from './core/room';
-import { OrbitControls } from 'three/examples/jsm/Addons.js';
+import { animate2DStart, canvas2D } from './canvas';
+import { roomOptions, type RoomData } from './core';
+import { animate3DStart, canvas3D } from './three';
+import { computeParams, type Mode, type Params } from './utils';
 
-export const scene = new Scene();
+const mode3DButton = document.createElement('button');
+mode3DButton.innerText = '3D';
+mode3DButton.style.position = 'absolute';
+mode3DButton.style.top = '20px';
+mode3DButton.style.left = '20px';
+mode3DButton.style.zIndex = '10';
+document.body.appendChild(mode3DButton);
 
-const light = new DirectionalLight(0xffffff, 1);
-light.position.set(5, 5, 5);
-scene.add(light);
+const mode2DButton = document.createElement('button');
+mode2DButton.innerText = '2D';
+mode2DButton.style.position = 'absolute';
+mode2DButton.style.top = '20px';
+mode2DButton.style.left = '120px';
+mode2DButton.style.zIndex = '10';
+document.body.appendChild(mode2DButton);
 
-const ambientLight = new AmbientLight(0xffffff, 0.5);
-scene.add(ambientLight);
+const randomizeRoomButton = document.createElement('button');
+randomizeRoomButton.textContent = 'Randomize Room';
+randomizeRoomButton.style.position = 'absolute';
+randomizeRoomButton.style.top = '20px';
+randomizeRoomButton.style.left = '420px';
+randomizeRoomButton.style.zIndex = '10';
+document.body.appendChild(randomizeRoomButton);
 
-export const camera = new PerspectiveCamera(
-  75,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  1000
-);
-camera.position.y = 3;
-camera.position.z = 2;
-camera.position.x = 2;
+const changeWidthLengthButton = document.createElement('button');
+changeWidthLengthButton.textContent = 'Next Length/Width';
+changeWidthLengthButton.style.position = 'absolute';
+changeWidthLengthButton.style.top = '20px';
+changeWidthLengthButton.style.left = '220px';
+changeWidthLengthButton.style.zIndex = '10';
+document.body.appendChild(changeWidthLengthButton);
 
-export const renderer = new WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+let roomData: RoomData;
+let currentMode: Mode = '2d';
+let params: Params[] = [];
+let paramsVariantIndex = 0;
+let animation3DLoop: number | null = null;
 
-const roomHeight = 200;
-const roomScale = 0.005;
-const room = new Room(roomHeight);
-room.scale.multiplyScalar(roomScale);
-scene.add(room);
+function switchMode(mode: '3d' | '2d'): void {
+  currentMode = mode;
 
-const orbitControls = new OrbitControls(camera, renderer.domElement);
-orbitControls.target.copy(
-  room.position.add(new Vector3(0, (roomHeight * roomScale) / 2, 0))
-);
+  if (animation3DLoop !== null) {
+    cancelAnimationFrame(animation3DLoop);
+  }
 
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});
+  switch (mode) {
+    case '3d':
+      canvas2D.style.display = 'none';
+      canvas3D.style.display = '';
+      break;
+    case '2d':
+      canvas2D.style.display = '';
+      canvas3D.style.display = 'none';
+      break;
+  }
 
-function animate() {
-  requestAnimationFrame(animate);
-
-  orbitControls.update();
-
-  renderer.render(scene, camera);
+  triggerAnimation();
 }
 
-animate();
+function triggerAnimation(): void {
+  switch (currentMode) {
+    case '3d':
+      animation3DLoop = animate3DStart(roomData, params[paramsVariantIndex]);
+      break;
+    case '2d':
+      animate2DStart(roomData, params[paramsVariantIndex]);
+      break;
+  }
+}
+
+function randomizeRoom(): void {
+  const roomIndex = Math.floor(Math.random() * roomOptions.length);
+  roomData = roomOptions[roomIndex];
+  params = computeParams(roomData);
+  paramsVariantIndex = 0;
+
+  switchMode(currentMode);
+}
+
+function switchParamsVariant(): void {
+  paramsVariantIndex = (paramsVariantIndex + 1) % params.length;
+  triggerAnimation();
+}
+
+mode2DButton.onclick = switchMode.bind(this, '2d');
+mode3DButton.onclick = switchMode.bind(this, '3d');
+randomizeRoomButton.onclick = randomizeRoom;
+changeWidthLengthButton.onclick = switchParamsVariant;
+
+randomizeRoom();

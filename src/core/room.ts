@@ -31,10 +31,9 @@ export class Room extends Group {
   private _center: { x: number; y: number };
   private _roomData: RoomData;
 
-  constructor(height: number) {
+  constructor(roomData: RoomData, height: number) {
     super();
-    const randomizedIndex = Math.floor(Math.random() * roomOptions.length);
-    this._roomData = roomOptions[randomizedIndex];
+    this._roomData = roomData;
     this._center = this._getCenter();
     this._createRoom(height);
   }
